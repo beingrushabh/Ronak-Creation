@@ -1,5 +1,5 @@
-import Image from 'next/image';
-import Link from 'next/link';
+import Image from "next/image";
+import Link from "next/link";
 
 export interface ProductCardData {
   id: string;
@@ -15,7 +15,13 @@ export interface ProductCardData {
   trending?: boolean | null;
 }
 
-export default function ProductCard({ product }: { product: ProductCardData }) {
+export default function ProductCard({
+  product,
+  variant = "default",
+}: {
+  product: ProductCardData;
+  variant?: "default" | "trending";
+}) {
   const {
     id,
     heading,
@@ -32,38 +38,80 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
 
   const computedPrice = final_price ?? Math.round(price - (discount * price) / 100);
 
+  const chips = [
+    fabric ? fabric.replace(/-/g, " ") : null,
+    work ? work.replace(/-/g, " ") : null,
+  ].filter(Boolean) as string[];
+
   return (
-    <Link href={`/product/${id}`} className="block border rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow bg-white relative">
-      {trending && (
-        <span className="absolute top-2 left-2 bg-secondary text-white px-2 py-1 text-xs rounded">
-          Trending
+    <Link
+      href={`/product/${id}`}
+      className={
+        "relative group block overflow-hidden rounded-2xl border bg-white/80 backdrop-blur shadow-sm hover:shadow-md transition-all " +
+        (variant === "trending" || trending ? "border-secondary/40 ring-1 ring-secondary/30" : "border-secondary/15")
+      }
+    >
+      {(trending || variant === "trending") && (
+        <span className="absolute z-10 top-3 left-3 inline-flex items-center gap-1 rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-black shadow-sm">
+          ✨ Trending
         </span>
       )}
+
+      {discount > 0 && (
+        <span className="absolute z-10 top-3 right-3 inline-flex items-center rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-primary border border-secondary/30">
+          {discount}% OFF
+        </span>
+      )}
+
       <div className="relative pb-[130%]">
         <Image
-          src={image_url || 'https://placehold.co/300x400'}
+          src={image_url || "https://placehold.co/300x400"}
           alt={heading}
           fill
-          className="object-cover"
+          className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
         />
       </div>
-      <div className="p-3 space-y-1">
-        <h3 className="font-semibold text-lg text-primary line-clamp-2 min-h-[3rem]">{heading}</h3>
-        <div className="flex items-baseline space-x-2">
+
+      <div className="p-4 space-y-2">
+        <h3 className="font-semibold text-[15px] md:text-base text-primary leading-snug min-h-[2.5rem]">
+          {heading}
+        </h3>
+
+        {chips.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {chips.slice(0, 2).map((c) => (
+              <span
+                key={c}
+                className="text-[11px] rounded-full px-2 py-0.5 bg-background border border-secondary/15 text-gray-700 capitalize"
+              >
+                {c}
+              </span>
+            ))}
+          </div>
+        )}
+
+        <div className="flex items-baseline gap-2">
           <span className="text-lg font-bold text-primary">₹{computedPrice}</span>
           {discount > 0 && (
             <>
               <span className="text-sm line-through text-gray-500">₹{price}</span>
-              <span className="text-xs text-green-700">-{discount}%</span>
+              <span className="text-xs font-semibold text-green-700">Save {discount}%</span>
             </>
           )}
         </div>
-        <ul className="text-xs text-gray-600 space-y-0.5">
-          {fabric && <li><strong>Fabric:</strong> {fabric}</li>}
-          {work && <li><strong>Work:</strong> {work}</li>}
-          {colour && <li><strong>Colour:</strong> {colour}</li>}
-          {stitch_type && <li><strong>Stitch:</strong> {stitch_type}</li>}
-        </ul>
+
+        <div className="text-xs text-gray-600 flex flex-wrap gap-x-3 gap-y-1">
+          {colour && (
+            <span>
+              <span className="font-medium text-gray-700">Colour:</span> {colour}
+            </span>
+          )}
+          {stitch_type && (
+            <span>
+              <span className="font-medium text-gray-700">Stitch:</span> {stitch_type}
+            </span>
+          )}
+        </div>
       </div>
     </Link>
   );

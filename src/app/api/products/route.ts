@@ -16,6 +16,7 @@ export async function GET(req: NextRequest) {
     .select('id, heading, price, discount, final_price, fabric, work, colour, stitch_type, image_url, trending', { count: 'exact' })
     .eq('is_hidden', false);
   // Filters
+  console.log(query)
   const priceBucket = params.get('priceBucket');
   if (priceBucket) {
     const [minStr, maxStr] = priceBucket.split('-');

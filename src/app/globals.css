@@ -2,7 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Global styles */
 body {
   @apply bg-background text-gray-900;
+}
+
+h1, h2, h3, h4 {
+  @apply tracking-tight;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(700px 500px at 10% 10%, rgba(212, 175, 55, 0.10), transparent 60%),
+    radial-gradient(800px 600px at 90% 20%, rgba(139, 0, 0, 0.08), transparent 55%),
+    radial-gradient(900px 650px at 40% 90%, rgba(212, 175, 55, 0.08), transparent 60%);
+  z-index: 0;
+}
+
+main {
+  position: relative;
+  z-index: 1;
 }

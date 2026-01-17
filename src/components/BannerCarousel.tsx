@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from 'react';
-import Image from 'next/image';
+import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 
 interface Banner {
   id: string;
@@ -11,50 +11,95 @@ interface Banner {
 
 interface BannerCarouselProps {
   banners: Banner[];
+  intervalMs?: number; // default 1000
+  heightPx?: number;   // default 100
 }
 
-/**
- * Simple banner carousel component. It cycles through banners
- * with left/right navigation. A more sophisticated carousel
- * could be introduced using a third‑party library if desired.
- */
-export default function BannerCarousel({ banners }: BannerCarouselProps) {
+export default function BannerCarousel({
+  banners,
+  intervalMs = 3000,
+  heightPx = 300,
+}: BannerCarouselProps) {
   const [index, setIndex] = useState(0);
-  if (!banners || banners.length === 0) return null;
+  const [paused, setPaused] = useState(false);
 
-  const next = () => setIndex((prev) => (prev + 1) % banners.length);
-  const prev = () => setIndex((prev) => (prev - 1 + banners.length) % banners.length);
+  const count = banners?.length ?? 0;
+  const current = useMemo(() => (count > 0 ? banners[index % count] : null), [banners, count, index]);
 
-  const current = banners[index];
+  const next = () => setIndex((prev) => (prev + 1) % count);
+  const prev = () => setIndex((prev) => (prev - 1 + count) % count);
+
+  // Auto-scroll
+  useEffect(() => {
+    if (count <= 1) return;
+    if (paused) return;
+
+    const t = setInterval(() => {
+      setIndex((prev) => (prev + 1) % count);
+    }, intervalMs);
+
+    return () => clearInterval(t);
+  }, [count, intervalMs, paused]);
+
+  if (!current) return null;
 
   return (
-    <div className="relative w-full overflow-hidden rounded-lg shadow-md">
-      <Image
-        src={current.image_url}
-        alt={current.name || 'Banner'}
-        width={1200}
-        height={400}
-        className="w-full h-auto object-cover"
-        priority
-      />
-      {banners.length > 1 && (
+    <div
+      className="relative w-full overflow-hidden rounded-2xl border border-secondary/20 bg-white/60 shadow-sm"
+      style={{ height: `${heightPx}px` }}
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      {/* Image */}
+      <div className="relative h-full w-full">
+        <Image
+          src={current.image_url}
+          alt={current.name || "Banner"}
+          fill
+          className="object-cover"
+          priority
+          sizes="(max-width: 768px) 100vw, 1200px"
+        />
+        {/* subtle overlay so buttons look good on bright images */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/10 via-transparent to-black/10" />
+      </div>
+
+      {/* Buttons centered vertically */}
+      {count > 1 && (
         <>
           <button
             type="button"
             onClick={prev}
-            className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow"
+            className="absolute left-3 top-1/2 -translate-y-1/2 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/85 hover:bg-white shadow border border-secondary/20"
             aria-label="Previous banner"
           >
-            ‹
+            <span className="text-lg leading-none">‹</span>
           </button>
+
           <button
             type="button"
             onClick={next}
-            className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow"
+            className="absolute right-3 top-1/2 -translate-y-1/2 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/85 hover:bg-white shadow border border-secondary/20"
             aria-label="Next banner"
           >
-            ›
+            <span className="text-lg leading-none">›</span>
           </button>
+
+          {/* Dots */}
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
+            {banners.map((b, i) => (
+              <button
+                key={b.id}
+                type="button"
+                onClick={() => setIndex(i)}
+                aria-label={`Go to banner ${i + 1}`}
+                className={
+                  "h-2 w-2 rounded-full transition-all " +
+                  (i === index ? "bg-secondary w-4" : "bg-white/80 hover:bg-white")
+                }
+              />
+            ))}
+          </div>
         </>
       )}
     </div>

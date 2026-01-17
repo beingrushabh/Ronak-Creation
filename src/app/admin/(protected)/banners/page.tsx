@@ -23,7 +23,8 @@ export default async function BannersPage() {
   return (
     <div className="space-y-4">
       <h1 className="text-2xl font-bold">Banners</h1>
-      <Link href="/admin/banners/new" className="inline-block bg-primary text-white px-3 py-2 rounded text-sm">Add Banner</Link>
+      <Link href="/admin/banners/new" className="block py-1 hover:text-primary pl-4">➜ Add Banner</Link>
+
       <table className="min-w-full bg-white shadow rounded overflow-hidden text-sm">
         <thead>
           <tr className="bg-gray-100">
