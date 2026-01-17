@@ -1,0 +1,33 @@
+{
+  "name": "ronak-creation-catalog",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "seed": "ts-node scripts/seed.ts"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^3.0.0",
+    "@supabase/supabase-js": "^2.5.0",
+    "@tanstack/react-query": "^5.0.0",
+    "next": "^14.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.45.1",
+    "shadcn-ui": "latest",
+    "zod": "^3.21.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.10",
+    "@types/react": "18.3.27",
+    "@types/react-dom": "^18.2.7",
+    "autoprefixer": "^10.4.15",
+    "postcss": "^8.4.29",
+    "tailwindcss": "^3.3.3",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  }
+}
