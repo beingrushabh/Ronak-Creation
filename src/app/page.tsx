@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import BannerCarousel from "@/components/BannerCarousel";
 import ProductGrid from "@/components/ProductGrid";
 import FilterSidebar from "@/components/FilterSidebar";
+import MobileFilterBar from "@/components/MobileFilterBar";
 
 export type SearchParams = {
   priceBucket?: string; // "500-1000" etc
@@ -136,13 +137,14 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
       {/* Catalog + Sidebar */}
       <section className="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-6 items-start">
         {/* Sidebar */}
-        <div className="md:sticky md:top-6">
-          <div className="rounded-2xl border border-secondary/20 bg-white/70 backdrop-blur p-4 shadow-sm">
-            <h3 className="text-lg font-semibold text-primary mb-3">Filters</h3>
-            <FilterSidebar />
-          </div>
-        </div>
-
+       
+            {/* Desktop sidebar */}
+            <div className="hidden lg:block lg:sticky lg:top-24">
+              <FilterSidebar />
+            </div>
+            {/* Mobile bottom filter */}
+           
+       
         {/* Products */}
         <div className="space-y-4">
           <div className="flex items-end justify-between">
@@ -153,7 +155,7 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
           <ProductGrid products={all} />
         </div>
       </section>
-
+ <MobileFilterBar />
       {/* New arrivals */}
       {/* {newArrivals.length > 0 && (
         <section className="space-y-3">
